@@ -2,7 +2,7 @@
 
 ## Agent path and what was installed
 
-To create my tool I used the Claude Code app installed to my desktop. I have also installed Claude into the command line in my pc, but to create this tool I used the desktop app version. Maya 2026 was also installed to run the script in the python tab and generate the labyrinth Gui.
+To create my tool I used the Claude Code app installed to my desktop. I have also installed Claude into the command line in my pc, but to create this tool I used the desktop app version. Maya 2026 was also installed to run the script in the python script tab and generate the labyrinth Gui.
 
 ## What I built
 
