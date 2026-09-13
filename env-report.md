@@ -10,4 +10,4 @@ Through chatting with the agent through the Claude app I was able to analyze and
 
 ## What broke, and what didn't
 
-In the end nothing broke. When I pasted the finished script written through Claude into Maya's Script Editor in the Python tab and ran it, the tool's labyrinth generator window opened cleanly and generated the desired results on the first real test in Maya. With further conversations in the Claude app it was able to generate me explanations of each line on code and what each line does. After careful revision I was able to understand what the scripts functions were.
+In the end nothing broke. When I pasted the finished script written through Claude into Maya's Script Editor in the Python tab and ran it, the tool's labyrinth generator window opened cleanly and generated the desired results on the first real test in Maya. With further conversations in the Claude app it was able to generate me explanations of each line on code within the script and what each it does. After careful revision I was able to make Claude's lines of explanation of the script more concise and remove the lines which I did not understand. 
