@@ -32,14 +32,14 @@ You can also skip the UI and call generate_labyrinth(...) directly with
 your own keyword args from another script.
 """
 
-# stdlib math for trig (building points around circles) and random for colors/seeding
+# math import (building points around circles) and random for colors
 import math
 import random
-# Maya's Python command module -- this is what only exists inside Maya, not plain python3
+# Maya's Python command import line
 import maya.cmds as cmds
 
 
-# name of the group node the tool creates so Generate/Delete can find it again later
+# name of the group node the tool creates 
 _DEFAULT_GROUP_NAME = "circularLabyrinth_grp"
 
 
@@ -48,7 +48,7 @@ _DEFAULT_GROUP_NAME = "circularLabyrinth_grp"
 # ---------------------------------------------------------------------------
 def _arc_points(radius, angle_start_deg, angle_end_deg, segments):
     """Points sampled along a circular arc, in the XZ plane (Y is up)."""
-    # walk evenly from angle_start to angle_end and convert each step to an (x, z) point on the circle
+
     pts = []
     for s in range(segments + 1):
         t = float(s) / float(segments)
@@ -64,13 +64,13 @@ def _quad(p0, p1, p2, p3):
 
 def _build_wall_arc(radius, angle_start_deg, angle_end_deg, thickness, height, segments, name):
     """Build one curved wall segment (a box swept along an arc) as a single mesh."""
-    # offset the centerline radius outward/inward by half the thickness to get the two wall faces
+    # creating two wall faces
     outer_r = radius + thickness / 2.0
     inner_r = radius - thickness / 2.0
     outer_pts = _arc_points(outer_r, angle_start_deg, angle_end_deg, segments)
     inner_pts = _arc_points(inner_r, angle_start_deg, angle_end_deg, segments)
 
-    # step along the arc one segment at a time, building the outer face, inner face, and top cap as we go
+    # building the outer face, inner face, and top cap
     faces = []
     for i in range(segments):
         ox0, oz0 = outer_pts[i]
@@ -101,7 +101,7 @@ def _build_wall_arc(radius, angle_start_deg, angle_end_deg, thickness, height, s
 
 
 def _make_color_shader(color, name):
-    # a lambert (matte) shader holds the RGB color; a shading group is Maya's plumbing to attach it to geometry
+    # a shader that holds the RGB color
     shader = cmds.shadingNode("lambert", asShader=True, name=name)
     cmds.setAttr(shader + ".color", color[0], color[1], color[2], type="double3")
     sg = cmds.sets(renderable=True, noSurfaceShader=True, empty=True, name=name + "SG")
@@ -140,7 +140,7 @@ def generate_labyrinth(
 
     Returns the name of the top-level group node.
     """
-    # a fixed seed makes the random colors reproducible between runs, for comparing tweaks
+    # a fixed seed makes the random colors reproducible between runs
     if seed is not None:
         random.seed(seed)
 
@@ -159,17 +159,17 @@ def generate_labyrinth(
             "consider fewer rings, a smaller ring width, or a larger outer radius."
         )
 
-    # this loop is the heart of the maze logic: one pass per ring, each ring gets a smaller radius and its own gap
+   
     for i in range(num_rings):
         radius = outer_radius - i * ring_width
-        # each ring's gap sits ~180 degrees + twist further around than the previous ring's gap
+     
         gap_angle = (entrance_angle + i * (180.0 + twist_deg)) % 360.0
 
-        # the wall itself is everything EXCEPT the gap, so it spans from just after the gap to just before it again
+       
         angle_start = gap_angle + gap_width_deg / 2.0
         angle_end = angle_start + (360.0 - gap_width_deg)
 
-        # more segments on a longer arc keeps the curve looking smooth instead of faceted
+        
         arc_fraction = (360.0 - gap_width_deg) / 360.0
         segments = max(3, int(round(circle_resolution * arc_fraction)))
 
@@ -231,14 +231,14 @@ def _hsv_to_rgb(h, s, v):
 # ---------------------------------------------------------------------------
 # UI
 # ---------------------------------------------------------------------------
-# window's internal Maya name, used to check if it's already open / to close it
+
 _WINDOW_NAME = "circularLabyrinthWindow"
-# dict of every UI control's name, keyed by what it controls, so the button callbacks can read their values later
+
 _ui = {}
 
 
 def _build_ui():
-    # if the window is already open from a previous run, close it first so we don't get duplicates
+    
     if cmds.window(_WINDOW_NAME, exists=True):
         cmds.deleteUI(_WINDOW_NAME)
 
@@ -253,7 +253,7 @@ def _build_ui():
     cmds.text(label="One winding path, no branches -- classic spiral labyrinth.", font="smallPlainLabelFont")
     cmds.separator(height=10, style="in")
 
-    # each of these sliders exposes one keyword argument of generate_labyrinth() to the user, with sensible defaults
+    # each of these sliders exposes one keyword argument of generate_labyrinth to the user
     _ui["num_rings"] = cmds.intSliderGrp(
         label="Number of rings", field=True, minValue=2, maxValue=30,
         fieldMinValue=2, fieldMaxValue=60, value=8, columnWidth3=(110, 50, 100),
@@ -298,7 +298,7 @@ def _build_ui():
     _ui["add_floor"] = cmds.checkBox(label="Add floor disc", value=True)
     _ui["add_center_marker"] = cmds.checkBox(label="Add center goal marker", value=True)
 
-    # the seed field only matters (is only enabled) once "Use fixed seed" is checked
+  
     seed_row = cmds.rowLayout(numberOfColumns=2, columnWidth2=(150, 150), adjustableColumn=2)
     _ui["use_seed"] = cmds.checkBox(label="Use fixed seed", value=False)
     _ui["seed_value"] = cmds.intField(value=42, enable=False)
@@ -321,7 +321,7 @@ def _build_ui():
 
 
 def _on_generate(*_args):
-    # read the "use fixed seed" checkbox first, since it decides whether we pass a seed value at all
+   l
     use_seed = cmds.checkBox(_ui["use_seed"], query=True, value=True)
     seed = cmds.intField(_ui["seed_value"], query=True, value=True) if use_seed else None
 
@@ -345,7 +345,7 @@ def _on_generate(*_args):
 
 
 def _on_delete(*_args):
-    # just removes the group node by name -- if it's not there, tell the user instead of erroring out
+    
     if cmds.objExists(_DEFAULT_GROUP_NAME):
         cmds.delete(_DEFAULT_GROUP_NAME)
         print("Deleted '{0}'.".format(_DEFAULT_GROUP_NAME))
@@ -353,6 +353,6 @@ def _on_delete(*_args):
         cmds.warning("No generated labyrinth found ('{0}' does not exist).".format(_DEFAULT_GROUP_NAME))
 
 
-# only runs the UI automatically when this file is executed directly/pasted in, not when imported as a module
+
 if __name__ == "__main__":
     _build_ui()
