@@ -321,7 +321,6 @@ def _build_ui():
 
 
 def _on_generate(*_args):
-   l
     use_seed = cmds.checkBox(_ui["use_seed"], query=True, value=True)
     seed = cmds.intField(_ui["seed_value"], query=True, value=True) if use_seed else None
 
